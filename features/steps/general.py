@@ -27,13 +27,14 @@ def document_is_displayed(context, component, name):
     for attempt in xrange(0, 10):
         try:
             current_window = context.app.get_current_window()
-            window_title = current_window
+            window_title = current_window.name.decode('utf-8')
             assert component in window_title and name in window_title
             return
         except AssertionError:
             sleep(1)
             continue
-    raise AssertionError("App window with expected title not found.")
+    raise AssertionError("Window title is %s, should be %s"\
+        %(window_title,name))
 
 
 @step(u'Select "{menu}" menu')
