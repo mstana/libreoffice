@@ -3,11 +3,11 @@ from subprocess import Popen, PIPE
 from iniparse import ConfigParser
 from dogtail.tree import root, SearchError
 
-from behave_common_steps import App
-from behave_common_steps import wait_until
-from behave_common_steps.app import *
-from behave_common_steps.appmenu import *
-from behave_common_steps.dialogs import *
+from common_steps import App
+from common_steps import wait_until
+from common_steps.app import *
+from common_steps.appmenu import *
+from common_steps.dialogs import *
 from dogtail.utils import run
 from dogtail.tree import root, SearchError
 from dogtail.rawinput import keyCombo,typeText

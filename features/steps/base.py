@@ -4,15 +4,15 @@ from behave import step
 
 from dogtail import predicate
 from dogtail.tree import root
-from behave_common_steps.app import *
-from behave_common_steps.appmenu import *
-from behave_common_steps.dialogs import *
+from common_steps.app import *
+from common_steps.appmenu import *
+from common_steps.dialogs import *
 from dogtail.rawinput import keyCombo, typeText, pressKey, drag
 from general import window_is_displayed, select_menuitem
 from dogtail.procedural import FocusWidget, FocusWindow
 
 
-# TABLE_FIELDS and TABLE_RECORDS are strictli connected to each other! 
+# TABLE_FIELDS and TABLE_RECORDS are strictli connected to each other!
 
 TABLE_FIELDS = [
 

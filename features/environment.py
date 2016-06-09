@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 import os
-from behave_common_steps import dummy#, App
+from common_steps import dummy#, App
 from lo_behave_common_steps import LOApp
 from dogtail.config import config
 from time import sleep, localtime, strftime
