@@ -54,9 +54,9 @@ Feature: LibreOffice Impress tests
     Then Window named "Presentation Wizard" is displayed
     * Create presentation from template titled "Presentation from template"
     Then Current slide title is "Presentation from template"
-  
+
   @export_odp_to_ppt
-  Scenario: Exporting Non-English MS PowerPoint format 
+  Scenario: Exporting Non-English MS PowerPoint format
     * Start soffice via command with Impress parameter
     Then Impress document named like "Untitled" is displayed
     * Select "Insert -> Slide" menu
@@ -71,4 +71,4 @@ Feature: LibreOffice Impress tests
     * In Open dialog select "tmp.ppt" from "/tmp/test_files"
     Then Impress document named like "tmp" is displayed
     Then Slide "1" include text "Доброе утро!"
-    Then Slide "2" include text "コンサート" 
+    Then Slide "2" include text "コンサート"

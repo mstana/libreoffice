@@ -4,11 +4,13 @@ from iniparse import ConfigParser
 from dogtail.tree import root, SearchError
 
 from behave_common_steps import App
+from behave_common_steps import wait_until
 from behave_common_steps.app import *
 from behave_common_steps.appmenu import *
 from behave_common_steps.dialogs import *
 from dogtail.utils import run
 from dogtail.tree import root, SearchError
+from dogtail.rawinput import keyCombo,typeText
 
 class LOApp(App):
     """
@@ -64,8 +66,7 @@ class LOApp(App):
         assert wait_until(lambda x: x.showing, textEntry), \
             "Can't find gnome shell search textbar"
 
-        app_name = self.getName(desktopConfig)
-        typeText(app_name)
+        typeText(self.desktopFileName)
         keyCombo('<Enter>')
 
         assert wait_until(lambda x: x.isRunning(), self, timeout=30),\
@@ -86,6 +87,9 @@ class LOApp(App):
         desktopConfig.read(output)
         return desktopConfig
 
+    def getName(self):
+        desktopConfig = self.parseDesktopFile()
+        return desktopConfig.get('Desktop Entry', 'name')
 
     def kill(self):
         """

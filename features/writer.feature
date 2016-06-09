@@ -33,7 +33,7 @@ Feature: LibreOffice Writer tests
     Then Formula panels with names "Elements" and "Commands" for edit are displayed
 
   @writer_insert_formula
-  Scenario: Insert table
+  Scenario: Insert formula
     * Start soffice via command with Writer parameter
     Then Writer document named like "Untitled" is displayed
     * Select "Insert -> Object -> Formula..." menu
@@ -47,7 +47,7 @@ Feature: LibreOffice Writer tests
     * In open dialog fill out path "/tmp", name "formula.odt" and confirm
     Then Writer document named like "formula" is displayed
     Then Formula "lllint from{1} to{x} (1 over sum from {k > j} (d_(j)+arccot(nroot{32 }X^{11})))+1" is saved in document
- 
+
   @search_and_replace_text
   Scenario: Search and Replace text
     * Start soffice via command with Writer parameter
@@ -60,13 +60,13 @@ Feature: LibreOffice Writer tests
   Scenario: Select all selects also tables
     * Start soffice via command with Writer parameter
     Then Writer document named like "Untitled" is displayed
-    * Type text "Aky zivot, taka smrt!" to paragraph 
+    * Type text "Aky zivot, taka smrt!" to paragraph
     * Insert table
     * Select all text and delete
     Then No text displayed
 
   @export_odt_to_doc
-  Scenario: Exporting Non-English MS word format 
+  Scenario: Exporting Non-English MS word format
     * Start soffice via command with Writer parameter
     Then Writer document named like "Untitled" is displayed
     * Insert text "kiitos" to document
@@ -79,6 +79,7 @@ Feature: LibreOffice Writer tests
     Then Writer document named like "tmp" is displayed
     Then Text "kiitos" is in document
 
+  @launch_math_editor
   Scenario: Launch Math editor
     * Start soffice via command with Writer parameter
     Then Writer document named like "Untitled" is displayed

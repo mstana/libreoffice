@@ -19,7 +19,7 @@ def start_app_component_via_command(context, app, component, type):
         context.app.startViaCommand()
     if type == 'menu':
         context.app.startViaMenu()
-        pressKey('enter')
+
 
 
 @then(u'{component:w} document named like "{name}" is displayed')
@@ -67,7 +67,6 @@ def set_root_location(context, dialog):
 def select_file_in_dialog(context, name, path):
     # click search button
     context.app.dialog.findChildren(lambda x: x.roleName == 'toggle button' and x.showing)[0].click()
-    set_root_location(context, context.app.dialog)
 
     full_path = os.path.join(path, name)
     typeText(full_path)
@@ -90,6 +89,7 @@ def file_open_on_path(context, path, name):
 
     full_path = os.path.join(path, name)
     context.app.dialog = context.app.get_current_window()
+    context.app.dialog.findChildren(lambda x: x.name == 'Type a file name')[0].click()
     context.app.dialog.childLabelled('Location:').set_text_contents(full_path)
     context.app.dialog.childLabelled('Location:').grab_focus()
     keyCombo('<Enter>')
@@ -134,7 +134,7 @@ def file_exists(context, name, path):
 
 @then(u'Dialog window named "{dialog_name}" is displayed')
 def dialog_window_is_displayed(context, dialog_name):
-    
+
     for attempt in xrange(0, 10):
         try:
             dialog_window = context.app.get_current_window()
