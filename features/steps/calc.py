@@ -5,9 +5,9 @@ from behave import step
 
 from dogtail import predicate
 from dogtail.tree import root
-from behave_common_steps.app import *
-from behave_common_steps.appmenu import *
-from behave_common_steps.dialogs import *
+from common_steps.app import *
+from common_steps.appmenu import *
+from common_steps.dialogs import *
 from dogtail.rawinput import keyCombo, typeText, pressKey, drag
 from general import select_menuitem
 from dogtail.procedural import FocusWidget
@@ -24,7 +24,7 @@ CELL_TRANSLATION = {
 }
 
 # README!
-# Do not try to access table directly without recursion set to False because 
+# Do not try to access table directly without recursion set to False because
 # it stuck the program and spend all memory.
 
 
@@ -258,7 +258,7 @@ def add_text_to_sheet_in_spreadsheet_to_cell(context, text_to_add, cell_name, sh
     try:
         cell = context.frame.child(roleName='table')[CELL_TRANSLATION[cell_name]]
         cell.grabFocus()
-        # type text    
+        # type text
         typeText(text_to_add)
         pressKey("enter")
 
@@ -340,10 +340,10 @@ def add_value_to_cell(context, operation, cell1, cell2, cell_result):
     context.frame = context.app.get_current_window().child(roleName='document spreadsheet')
     try:
         string_to_add = cell1.split(" ")[1] + " " + operation + " " + cell2.split(" ")[1]
-        
+
         cell = context.frame.child(roleName='table')[CELL_TRANSLATION[cell_result]]
         cell.grabFocus()
-        
+
         tool_bar = context.frame.parent.parent[2]
         tool_bar.findChildren(lambda x: x.roleName == 'push button')[2].click()
         typeText(string_to_add)
@@ -372,7 +372,7 @@ def make_sheet_protected(context):
         selector1.doAction('click')
     if not selector2.checked:
         selector1.doAction('click')
-    
+
     # confirm
     dialog.child(name='OK').click()
     dialog_frame_window_is_displayed(context, "Untitled 1 - LibreOffice Calc")

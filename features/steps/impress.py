@@ -4,9 +4,9 @@ from behave import step
 
 from dogtail import predicate
 from dogtail.tree import root
-from behave_common_steps.app import *
-from behave_common_steps.appmenu import *
-from behave_common_steps.dialogs import *
+from common_steps.app import *
+from common_steps.appmenu import *
+from common_steps.dialogs import *
 from dogtail.rawinput import keyCombo, typeText, pressKey
 from general import window_is_displayed, select_menuitem, select_file_in_dialog, file_save_to_path, start_app_component_via_command
 
@@ -104,28 +104,32 @@ def presentation_from_template(context, presentation_title):
 @step(u'Insert to slide "{number_of_slide}" text "{text}"')
 def insert_text_to_slide(context, number_of_slide, text):
 
+
     current_window = context.app.get_current_window()
     # choose right slide
     current_window.child(name='Slides View', roleName='document frame')[int(number_of_slide)-1].click()
-    
-    
-    # find paragraph to write and write
-    frame = context.app.get_current_window().findChildren(lambda x: x.roleName == 'document presentation')[0]
-    frame.findChildren(lambda x: x.name == 'Paragraph 0')[0].click()
-    
-    typeText(text)
+
+    # find paragraph, and write the text
+    paragraph = current_window.findChildren(lambda x: x.name == 'Paragraph 0')[0]
+    paragraph.text = text
+
+    #click in the end to change the focus back to main window
+    current_window.click()
 
 
 @then(u'Slide "{number_of_slide}" include text "{text}"')
 def slide_include_text(context, number_of_slide, text):
 
-    sleep(5)
+    sleep(3)
     current_window = context.app.get_current_window()
     current_window.child(name='Slides View', roleName='document frame')[int(number_of_slide)-1].click()
 
-    # FIX ME: this is kind of weird access to frame but way from insert_text_to_slide wasn't from some reason working
-    frame = context.app.get_current_window().findChildren(lambda x: x.roleName == 'document presentation')[0]
-    text_from_slide = frame.findChildren(lambda x: x.roleName == 'paragraph')[0].text
+    # get the text from slide (Text should be in unicode)
+    text_from_slide = current_window.findChildren(lambda x: x.name == 'Paragraph 0')[0].text
 
-    assert unicode(text_from_slide, 'utf-8') == unicode(text, 'utf-8'),\
-        "Text are not consistent in slide number %s, is: %s should be: %s" % (number_of_slide, unicode(text_from_slide, 'utf-8'), unicode(text, 'utf-8'))
+    assert text_from_slide.decode("utf-8") == text,\
+        "Text are not consistent in slide number %s, is: %s should be: %s"\
+         % (number_of_slide, text_from_slide.decode("utf-8"), text)
+
+    #click in the end to change the focus back to main window
+    current_window.click()

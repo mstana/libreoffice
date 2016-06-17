@@ -4,9 +4,9 @@ from behave import step
 
 from dogtail import predicate
 from dogtail.tree import root
-from behave_common_steps.app import *
-from behave_common_steps.appmenu import *
-from behave_common_steps.dialogs import *
+from common_steps.app import *
+from common_steps.appmenu import *
+from common_steps.dialogs import *
 from dogtail.rawinput import keyCombo, typeText, pressKey
 from general import click_button_in_dialog_window
 
@@ -115,19 +115,20 @@ def panels_displayed(context, name1, name2):
 
 @step(u'Insert "{formula}" formula to panel with name "{panelname}"')
 def insert_formula_to_panel(context, formula, panelname):
-    context.panel_commands.child(roleName='paragraph').typeText(formula)
-    context.window.child(roleName='paragraph').click()
+    paragraph = context.window.findChildren(lambda x: x.roleName == 'paragraph' and x.name == 'Paragraph 0')[0]
+    paragraph.typeText(formula)
+    paragraph.click()
 
 
 @then(u'Formula "{formula}" is saved in document')
 def formula_in_opened_document(context, formula):
     paragraph = context.app.get_current_window().child(roleName='paragraph')
-    paragraph.child(roleName='embedded component').doubleClick()
+    paragraph.child(roleName='embedded').doubleClick()
     window = context.app.get_current_window().parent.findChildren(
         lambda x: x.roleName == 'frame' and x.name != "Elements")[0]
     commands = window.findChildren(lambda x: x.roleName == 'panel' and x.name == 'Commands')[0]
     text = commands.child(roleName='paragraph').text
-    # from some reason writer always add ' }' at the end of formula   
+    # from some reason writer always add ' }' at the end of formula
     # when writing formula to paragraph writer is making autocorrect sometimes on spaces so first delete all of them
     assert (formula + ' }').replace(" ", "") == text.replace(" ", ""), \
         "Incorrect panel name, expected '%s' but was '%s'" % (formula + ' }', text)
@@ -149,7 +150,10 @@ def inserted_text_is_in_document(context, text):
 
 @then(u'Math Editor launched and displayed')
 def math_editor_launch_and_displayed(context):
-    context.window = context.app.get_current_window()
-    assert "LibreOffice Math" in unicode(context.window.name, 'utf-8'),\
+
+    # for some reason Math window is taking some time to render
+    sleep(5)
+    window_name = context.app.get_current_window().name
+    assert "LibreOffice Math" in unicode(window_name, 'utf-8'),\
         "Name of window is: \"%s\", should be like: \"%s\""\
-        % (unicode(context.window.name, 'utf-8'), "LibreOffice Math")
+        % (unicode(window_name, 'utf-8'), "LibreOffice Math")

@@ -1,0 +1,99 @@
+#!/bin/sh
+set -eu
+
+# An example hook script to verify what is about to be pushed.  Called by "git
+# push" after it has checked the remote status, but before anything has been
+# pushed.  If this script exits with a non-zero status nothing will be pushed.
+#
+# This hook is called with the following parameters:
+#
+# $1 -- Name of the remote to which the push is being done
+# $2 -- URL to which the push is being done
+#
+# If pushing without using a named remote those arguments will be equal.
+#
+# Information about the commits which are being pushed is supplied as lines to
+# the standard input in the form:
+#
+#   <local ref> <local sha1> <remote ref> <remote sha1>
+#
+# This sample shows how to prevent push of commits where the log message starts
+# with "WIP" (work in progress).
+
+## Push of all branches to the empty remote
+##
+## matej@wycliff: empathy (rhel-7)$ git push --all testrepo 
+## remote: testrepo
+## url: luther:/srv/git/test.git
+## local_ref: refs/heads/gitissius
+## local_sha: 0e6efaa88a4354502b2145f30cc74372d40e3df6
+## remote_ref: refs/heads/gitissius
+## remote_sha: 0000000000000000000000000000000000000000
+## local_ref: refs/heads/master
+## local_sha: 2cdd13a40d0a640b0ef6dadda4997713dd461aab
+## remote_ref: refs/heads/master
+## remote_sha: 0000000000000000000000000000000000000000
+## local_ref: refs/heads/rhel-7
+## local_sha: 1b55c05b744994233efc0a1c790ac6147be0a1c0
+## remote_ref: refs/heads/rhel-7
+## remote_sha: 0000000000000000000000000000000000000000
+## Counting objects: 147, done.
+## Delta compression using up to 4 threads.
+## Compressing objects: 100% (89/89), done.
+## Writing objects: 100% (147/147), 348.34 KiB | 0 bytes/s, done.
+## Total 147 (delta 52), reused 137 (delta 48)
+## To luther:/srv/git/test.git
+##  * [new branch]      gitissius -> gitissius
+##  * [new branch]      master -> master
+##  * [new branch]      rhel-7 -> rhel-7
+##
+##
+## Push just one commit to the already filled remote
+## matej@wycliff: empathy (rhel-7)$ git push 
+## remote: engrepo
+## url: barstool:~/public_git/empathy.git
+## local_ref: refs/heads/rhel-7
+## local_sha: 927e8fed6cad8bb9838cdccd75d7e10aa70016a0
+## remote_ref: refs/heads/rhel-7
+## remote_sha: 458a5fe3606b3144ea61e9496ba8ce901ae9a208
+## Counting objects: 11, done.
+## Delta compression using up to 4 threads.
+## Compressing objects: 100% (7/7), done.
+## Writing objects: 100% (7/7), 1.08 KiB | 0 bytes/s, done.
+## Total 7 (delta 4), reused 0 (delta 0)
+## To barstool:~/public_git/empathy.git
+##    458a5fe..927e8fe  rhel-7 -> rhel-7
+## matej@wycliff: empathy (rhel-7)$ 
+
+remote="$1"
+url="$2"
+GERRIT_URL_BASE="gerrit.dqe.lab.eng.bos.redhat.com:29418"
+sav_dir="$(readlink -f .)"
+trap "cd ${sav_dir}" EXIT
+
+pwd
+while ! ls features >/dev/null 2>&1 ; do
+    cd ..
+    pwd
+    if [[ "$(pwd)" == "$HOME" ]] ; then
+        echo 'We are not in the test tree!' >&2
+        exit 2
+    fi
+done
+
+# If we are not pushing to the gerrit repo, don’t bother
+if [[ "$url" =~ "$GERRIT_URL_BASE" ]] ; then
+
+    IFS=' '
+    while read local_ref local_sha remote_ref remote_sha ; do
+        local_symb_name="$(git rev-parse --symbolic-full-name $local_ref)"
+        if [[ "$local_symb_name" =~ rhel- ]] ; then
+            echo "We are pushing a RHEL branch to the Gerrit"
+            behave -f steps --dry-run
+            exit $?
+        fi
+    done
+
+fi
+
+exit 0
